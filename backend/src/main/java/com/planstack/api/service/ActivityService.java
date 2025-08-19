@@ -2,33 +2,51 @@ package com.planstack.api.service;
 
 import com.planstack.api.model.Activity;
 import com.planstack.api.repository.ActivityRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 @Service
 public class ActivityService {
 
-    private final ActivityRepository repository;
+    @Autowired
+    private ActivityRepository repo;
 
-    public ActivityService(ActivityRepository repository) {
-        this.repository = repository;
+    @Autowired
+    private ProjectService projectService;
+
+    public List<Activity> listAll() {
+        return repo.findAll();
     }
 
-    public List<Activity> findAll() {
-        return repository.findAll();
+    public List<Activity> listByProject(Long projectId) {
+        projectService.findById(projectId);
+        return repo.findByProjectId(projectId);
     }
 
-    public Optional<Activity> findById(Long id) {
-        return repository.findById(id);
+    public Activity findById(Long id) {
+        return repo.findById(id)
+                   .orElseThrow(() -> new NoSuchElementException("Atividade não encontrada com id " + id));
     }
 
-    public Activity save(Activity activity) {
-        return repository.save(activity);
+    public Activity create(Activity activity) {
+        var projeto = projectService.findById(activity.getProject().getId());
+        activity.setProject(projeto);
+        return repo.save(activity);
+    }
+
+    public Activity update(Long id, Activity updated) {
+        Activity existing = findById(id);
+        existing.setName(updated.getName());
+        existing.setDescription(updated.getDescription());
+        var projeto = projectService.findById(updated.getProject().getId());
+        existing.setProject(projeto);
+        return repo.save(existing);
     }
 
     public void delete(Long id) {
-        repository.deleteById(id);
+        repo.delete(findById(id));
     }
 }

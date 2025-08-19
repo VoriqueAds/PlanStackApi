@@ -1,0 +1,45 @@
+.register-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; /* ocupa a altura toda da tela */
+  padding: 1rem;
+}
+
+.register-container {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+.register-container h2 {
+  margin-bottom: 1.5rem;
+}
+
+.register-container input {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.register-container button {
+  width: 100%;
+  padding: 10px;
+  background-color: #198754;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.register-container button:hover {
+  background-color: #157347;
+}

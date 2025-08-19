@@ -1,47 +1,47 @@
 package com.planstack.api.controller;
 
-import java.util.ArrayList;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.planstack.api.model.Project;
 import com.planstack.api.service.ProjectService;
-import com.planstack.api.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
-
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
+import java.util.List;
 
 @RestController
-@RequestMapping("/project")
+@RequestMapping("/api/projects")
 public class ProjectController {
     @Autowired
-    ProjectService projectService;
-    @Autowired
-    UserService userService;
+    private ProjectService service;
 
-@PostMapping("/register")
-public ResponseEntity<?> register(@RequestBody @Valid Project project, BindingResult bindingResult) {
-    if (bindingResult.hasErrors()) {
-        ArrayList<String> errors = new ArrayList<>();
-        for (ObjectError elem : bindingResult.getAllErrors()) {
-            errors.add(elem.getDefaultMessage());
-        }
-        return ResponseEntity.badRequest().body(errors);
+    @GetMapping
+    public List<Project> getAll() {
+        return service.listAll();
     }
-    if (userService.isExist(project.user.id)) {
-        project = projectService.register(project);
-        return ResponseEntity.ok(project);
-    } else {
-        return ResponseEntity.badRequest().body("O gestor não existe.");
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Project> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.findById(id));
     }
-}
-    
+
+    @PostMapping
+    public ResponseEntity<Project> create(@Validated @RequestBody Project project) {
+        Project saved = service.create(project);
+        return ResponseEntity.ok(saved);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Project> update(
+            @PathVariable Long id,
+            @Validated @RequestBody Project project
+    ) {
+        return ResponseEntity.ok(service.update(id, project));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -1,56 +1,40 @@
 package com.planstack.api.service;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-
 import com.planstack.api.model.Project;
 import com.planstack.api.repository.ProjectRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class ProjectService {
-    
     @Autowired
-    private ProjectRepository projectRepository;
+    private ProjectRepository repo;
 
-    public boolean isExist(Long id) {
-        return projectRepository.existsById(id);
+    public List<Project> listAll() {
+        return repo.findAll();
     }
 
-    public Project register(Project project) {
-        return projectRepository.save(project);
+    public Project findById(Long id) {
+        return repo.findById(id)
+                   .orElseThrow(() -> new NoSuchElementException("Projeto não encontrado com id " + id));
     }
 
-    public Project update(Project project) {
-        return projectRepository.save(project);
+    public Project create(Project project) {
+        return repo.save(project);
     }
 
-    public List<Project> list() {
-        return projectRepository.findAll();
+    public Project update(Long id, Project updated) {
+        Project existing = findById(id);
+        existing.setNome(updated.getNome());
+        existing.setDescricao(updated.getDescricao());
+        existing.setUser(updated.getUser());
+        return repo.save(existing);
     }
 
-    public Optional<Project> findById(Long id) {
-        return projectRepository.findById(id);
-    }
-
-    public void remove(Long id) {
-        if (isExist(id)) {
-            projectRepository.deleteById(id);
-        }
-    }
-
-    public ResponseEntity<?> remove2(Long id) {
-        if (id == null || id <= 0) {
-            return ResponseEntity.badRequest().body("O ID deverá ser superior a ZERO.");
-        }
-        if (isExist(id)) {
-            remove(id);
-            return ResponseEntity.ok("Projeto removido com sucesso.");
-        } else {
-            return ResponseEntity.badRequest().body("O ID informado não existe.");
-        }
+    public void delete(Long id) {
+        repo.delete(findById(id));
     }
 }

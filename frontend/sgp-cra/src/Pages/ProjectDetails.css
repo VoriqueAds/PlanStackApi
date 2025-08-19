@@ -1,0 +1,11 @@
+.project-list-wrapper {
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+.card {
+  background-color: #fff;
+  transition: all 0.3s ease;
+}
+.card:hover {
+  transform: scale(1.02);
+}
